@@ -39,7 +39,7 @@ app.post('/signin', (req, res) => {
    if (req.body) {
       tempDatabase.users.forEach(user => {
          if (user.email === req.body.email && user.password === req.body.password) {
-            res.json('success');
+           return res.json(user);
          }
       })
    }
@@ -59,7 +59,7 @@ app.post('/register', (req, res) => {
          joined: new Date()
          
       });
-      res.json(tempDatabase.users[tempDatabase.users.length - 1]);
+     return res.json(tempDatabase.users[tempDatabase.users.length - 1]);
    }
 
    res.status(400).json('error registering');
