@@ -2,33 +2,25 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
+const knex = require('knex');
+
+const database = knex({
+   client: 'pg',
+   connection: {
+     host : '127.0.0.1',
+     user : 'igor',
+     password : 'dbpass',
+     database : 'smart-brain'
+   }
+ });
+
+ database.select('*').from('users').then(data => console.log(data));
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
 
-const tempDatabase = {
-   users: [
-      {
-         id: '123',
-         name: 'Donkey',
-         email: 'donkey@email.com',
-         password: 'kong',
-         entries: 0,
-         joined: new Date()
-      }
-   ],
-
-   login: [
-      {
-         id: '987',
-         hash: '',
-         email: '',
-      }
-   ]
-
-}
 
 
 app.get('/', (req, res) => {
@@ -47,22 +39,18 @@ app.post('/signin', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-   const { email, password, name } = req.body;
-   console.log('req', req.body);
-   if (req.body) {
-      tempDatabase.users.push({
-         id: 125,
-         email: email,
-         password: password,
-         name: name,
-         entries: 0,
-         joined: new Date()
-         
-      });
-     return res.json(tempDatabase.users[tempDatabase.users.length - 1]);
-   }
-
-   res.status(400).json('error registering');
+   const { email, name, password } = req.body;
+   database('users')
+   .returning('*')
+   .insert({
+      email: email,
+      name: name,
+      joined: new Date()
+   })
+   .then(user => {
+      res.json(user[0]);
+   })
+   .catch(err => res.status(400).json('unable to register'));
 
 });
 
