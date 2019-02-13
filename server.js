@@ -14,8 +14,6 @@ const database = knex({
    }
 });
 
-database.select('*').from('users').then(data => console.log(data));
-
 const app = express();
 
 app.use(bodyParser.json());
@@ -28,14 +26,22 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-   if (req.body) {
-      database.users.forEach(user => {
-         if (user.email === req.body.email && user.password === req.body.password) {
-            return res.json(user);
+   database.select('email', 'hash').from('login')
+      .where('email', '=', req.body.email)
+      .then(data => {
+         const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
+         if (isValid) {
+            return database.select('*').from('users')
+               .where('email', '=', req.body.email)
+               .then(user => {
+                  res.json(user[0]);
+               })
+               .catch(error => res.status(400).json('unable to get user'));
+         } else {
+            res.status(400).json('wrong password');
          }
       })
-   }
-   res.status(400).json('error logging in');
+      .catch(err => res.status(400).json('wrong credentials'));
 });
 
 app.post('/register', (req, res) => {
@@ -46,24 +52,24 @@ app.post('/register', (req, res) => {
          hash: hash,
          email: email
       })
-      .into('login')
-      .returning('email')
-      .then(loginEmail => {
-         return trx('users')
-            .returning('*')
-            .insert({
-               email: loginEmail[0],
-               name: name,
-               joined: new Date()
-            })
-            .then(user => {
-               res.json(user[0]);
-            })
-      })
-      .then(trx.commit)
-      .catch(trx.rollback);
+         .into('login')
+         .returning('email')
+         .then(loginEmail => {
+            return trx('users')
+               .returning('*')
+               .insert({
+                  email: loginEmail[0],
+                  name: name,
+                  joined: new Date()
+               })
+               .then(user => {
+                  res.json(user[0]);
+               })
+         })
+         .then(trx.commit)
+         .catch(trx.rollback);
    })
-   .catch(() => res.status(400).json('not able to register'));
+      .catch(() => res.status(400).json('not able to register'));
 
 
 });
