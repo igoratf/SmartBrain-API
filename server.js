@@ -31,13 +31,11 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', signin.handleSignIn(database, bcrypt));
-
 app.post('/register', register.handleRegister(database, bcrypt));
-
 app.get('/profile/:id', profile.handleProfileGet(database));
-
-
 app.put('/image', image.handleImage(database));
+app.post('/imageurl', image.handleApiCall);
+
 
 app.listen(3000, () => {
    console.log('listening port 3000');
