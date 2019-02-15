@@ -30,14 +30,14 @@ app.get('/', (req, res) => {
    // res.send(database.users);
 });
 
-app.post('/signin', (req, res) => {signin.handleSignIn(req, res, database, bcrypt)});
+app.post('/signin', signin.handleSignIn(database, bcrypt));
 
-app.post('/register', (req, res) => {register.handleRegister(req, res, database, bcrypt)});
+app.post('/register', register.handleRegister(database, bcrypt));
 
-app.get('/profile/:id', (req, res) => {profile.handleProfileGet(req, res, database)});
+app.get('/profile/:id', profile.handleProfileGet(database));
 
 
-app.put('/image', (req, res) => {image.handleImage(req, res, database)});
+app.put('/image', image.handleImage(database));
 
 app.listen(3000, () => {
    console.log('listening port 3000');
