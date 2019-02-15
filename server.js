@@ -6,6 +6,7 @@ const knex = require('knex');
 
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
+const profile = require('./controllers/profile');
 
 const database = knex({
    client: 'pg',
@@ -32,19 +33,7 @@ app.post('/signin', (req, res) => {signin.handleSignIn(req, res, database, bcryp
 
 app.post('/register', (req, res) => {register.handleRegister(req, res, database, bcrypt)});
 
-app.get('/profile/:id', (req, res) => {
-   const { id } = req.params;
-   database('users').where({ id })
-      .select('*')
-      .then(user => {
-         if (user.length) {
-            res.json(user[0])
-         } else {
-            res.status(400).json('user not found');
-         }
-      })
-      .catch(err => res.status(400).json('error retrieving user'));
-});
+app.get('/profile/:id', (req, res) => {profile.handleProfileGet(req, res, database)});
 
 
 app.put('/image', (req, res) => {
