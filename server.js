@@ -37,8 +37,8 @@ app.put('/image', image.handleImage(database));
 app.post('/imageurl', image.handleApiCall);
 
 
-app.listen(3000, () => {
-   console.log('listening port 3000');
+app.listen(process.env.PORT || 3000, () => {
+   console.log(`listening port 3000 ${process.env.PORT}`);
 });
 
 
