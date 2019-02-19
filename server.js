@@ -27,20 +27,18 @@ app.use(cors());
 
 
 app.get('/', (req, res) => {
-   //
+   return res.send('App is running');
 });
 
 app.post('/signin', signin.handleSignIn(database, bcrypt));
-
 app.post('/register', register.handleRegister(database, bcrypt));
-
 app.get('/profile/:id', profile.handleProfileGet(database));
-
-
 app.put('/image', image.handleImage(database));
+app.post('/imageurl', image.handleApiCall);
 
-app.listen(3000, () => {
-   console.log('listening port 3000');
+
+app.listen(process.env.PORT || 3000, () => {
+   console.log(`listening port 3000 ${process.env.PORT}`);
 });
 
 
