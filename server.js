@@ -38,12 +38,3 @@ app.post('/imageurl', image.handleApiCall);
 app.listen(process.env.PORT || 3000, () => {
    console.log(`listening port ${process.env.PORT}`);
 });
-
-
-/*
-/ --> res = root base working
-/signin --> POST = success/fail
-/register --> POST = user
-/profile/:userId --> GET = user
-/image --> PUT = user
-*/
